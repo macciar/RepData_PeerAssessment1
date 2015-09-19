@@ -32,7 +32,8 @@ transformed into an HTML file.
 
 The first step is to read the unziped file located in your current working directory:
 
-```{r,echo = TRUE}
+
+```r
 #Reads file
 amd <- read.csv("activity.csv", header = TRUE, sep = ",")
 #Tranforms the date column to date.The default format is yyyy-mm-dd.
@@ -47,7 +48,8 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 -Calculate the total number of steps taken per day
 
-```{r, echo = TRUE}
+
+```r
 #Aggregates steps by date
 aggabddata <- aggregate(amd$steps, by= list(date=amd$date), FUN=sum, na.rm=TRUE)
 
@@ -60,24 +62,37 @@ names(aggabddata)[2] <- "totalsteps"
  them. Make a histogram of the total number of steps taken each day
 
 
-```{r, echo=TRUE}
+
+```r
 #Displays histogram
 hist(aggabddata$totalsteps, col="green", main="Total Number of Steps Taken Each Day", xlab="Total Number of Steps", ylab="Number of Days")
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 -Calculate and report the mean and median of the total number of steps taken per day
 
 Mean total number of steps taken per day:
 
-```{r, echo=TRUE}
+
+```r
 mean(aggabddata$totalsteps, na.rm=TRUE)
+```
+
+```
+## [1] 9354.23
 ```
 
 
 Median total number of steps taken per day:
 
-```{r, echo=TRUE}
+
+```r
 median(aggabddata$totalsteps, na.rm=TRUE)
+```
+
+```
+## [1] 10395
 ```
 
 
@@ -87,7 +102,8 @@ median(aggabddata$totalsteps, na.rm=TRUE)
  taken, averaged across all days (y-axis)
 
 
-```{r, echo=TRUE}
+
+```r
 #Aggregates steps by interval
 aggabidata <- aggregate(amd$steps, by= list(interval=amd$interval), FUN=mean, na.rm=TRUE)
 
@@ -96,16 +112,23 @@ names(aggabidata)[2] <- "totalsteps"
 
 #Displays the plot
 plot(aggabidata$interval, aggabidata$totalsteps,type="l",xlab="5-minute Interval", ylab="Average Number of Steps Taken", main="Average Number of Steps Taken Across All Days ")
-
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 
 -Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 Interval with the maximum number of steps:
 
-```{r, echo=TRUE}
+
+```r
 aggabidata[which.max(aggabidata$totalsteps), ]
+```
+
+```
+##     interval totalsteps
+## 104      835   206.1698
 ```
 The 835th interval contains the maximum number of steps.
 
@@ -118,8 +141,13 @@ days may introduce bias into some calculations or summaries of the data.
 
 Number of missing data:
  
-```{r, echo=TRUE}
+
+```r
 sum(is.na(amd))
+```
+
+```
+## [1] 2304
 ```
 Total 2304 rows are missing.
 
@@ -131,7 +159,8 @@ the missing values are replaced with this amount.
 
 -Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r, echo=TRUE}
+
+```r
 amdfilledna <- amd
 amdfilledna$steps[is.na(amdfilledna$steps)] <- mean(amdfilledna$steps, na.rm = T)
 ```
@@ -139,7 +168,8 @@ amdfilledna$steps[is.na(amdfilledna$steps)] <- mean(amdfilledna$steps, na.rm = T
 
 -Make a histogram of the total number of steps taken each day 
   
-```{r, echo=TRUE}
+
+```r
 #Aggregates new dataset by date, returning the sum of steps
 aggafnadata <- aggregate(amdfilledna$steps, by= list(date=amdfilledna$date), FUN=sum, na.rm=TRUE)
 
@@ -148,21 +178,32 @@ names(aggafnadata)[2] <- "totalsteps"
 
 #Displays histogram of the total number of steps taken each day with new dataset (original dataset but with the missing data filled in)
 hist(aggafnadata$totalsteps, col="red", main="Total Number of Steps Taken Each Day", xlab="Total Number of Steps", ylab="Number of Days")
-
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 -Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment?
 
 Mean total number of steps taken per day (missing replaced with the mean of steps excluding NA values):
 
-```{r, echo=TRUE}
+
+```r
 mean(aggafnadata$totalsteps, na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
 ```
 
 Median total number of steps taken per day (missing replaced with the mean of steps excluding NA values):
 
-```{r, echo=TRUE}
+
+```r
 median(aggafnadata$totalsteps, na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
 ```
 
 -What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -176,20 +217,21 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 -Create a new factor variable in the dataset with two levels: weekday and weekend indicating whether a given date is a weekday or weekend day.
 
 
-```{r, echo=TRUE}
+
+```r
 #Tranforms the date column to date.The default format is yyyy-mm-dd.
 amdfilledna$date = as.Date(amdfilledna$date)
 
 #Creates a factor variable with two levels (weekday, weekend-day)
 amdfilledna$dayofweek <- as.factor(ifelse(weekdays(amdfilledna$date) %in% c("Saturday", "Sunday"), "weekend", "weekday"))
-
 ```
 
 -Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps 
  taken, averaged across all weekday days or weekend days (y-axis). 
 
 
-```{r, echo=TRUE}
+
+```r
 # Calculates the mean
 aggafnaweekdays <- aggregate(amdfilledna$steps, by= list(amdfilledna$interval, amdfilledna$dayofweek), FUN=mean, na.rm=TRUE)
 
@@ -202,6 +244,7 @@ library(lattice)
 # Displays the two plots
 xyplot(totalsteps ~ interval | dayofweek, data = aggafnaweekdays, type = "l", xlab = "5-minute Interval", 
     ylab = "Average Number of Steps Taken", layout = c(1, 2))
-
 ```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
 
